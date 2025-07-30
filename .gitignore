@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar archivo de variables de entorno
+.env
+postgres/
+.DS_Store
+**/.DS_Store

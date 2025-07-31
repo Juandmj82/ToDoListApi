@@ -1,0 +1,10 @@
+PUT http://localhost:8080/api/tasks/3
+Content-Type: application/json
+
+{
+  "titulo": "Control de versiones",
+  "descripcion": "Hace falta seguimiento",
+  "responsable": "Paola",
+  "fechaEntrega": "2025-12-31",
+  "estado": true
+}

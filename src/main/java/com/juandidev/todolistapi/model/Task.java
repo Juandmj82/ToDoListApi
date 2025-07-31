@@ -1,6 +1,7 @@
 package com.juandidev.todolistapi.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
@@ -37,7 +38,6 @@ public class Task {
 
     @Future(message = "La fecha de entrega debe ser igual o posterior a la fecha actual")
     @Column(nullable = false)
-    private LocalDateTime fechaCreacion = LocalDateTime.now();
     private LocalDate fechaEntrega;
 
     @Column(nullable = false)

@@ -11,7 +11,4 @@ public interface TaskRepository extends JpaRepository <Task, Long>{
     //métodos personalizados
     List<Task> findByEstado(boolean estado);
     List<Task> findByResponsable(String responsable);
-
-
-
 }

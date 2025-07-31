@@ -1,0 +1,10 @@
+POST http://localhost:8080/api/tasks
+Content-Type: application/json
+
+{
+  "titulo": "Implementar control de versiones",
+  "descripcion": "Hace falta seguimiento",
+  "responsable": "Paola",
+  "fechaEntrega": "2025-08-20",
+  "estado": true
+}

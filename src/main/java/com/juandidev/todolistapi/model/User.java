@@ -40,34 +40,17 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-
-    // Define una colección de elementos básicos (en este caso, Strings)
-// FetchType.EAGER = Los roles se cargan inmediatamente al cargar el usuario
-    @ElementCollection(fetch = FetchType.EAGER)
-// Crea una tabla separada 'user_roles' que se relaciona con 'usuarios' mediante 'user_id'
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-// El nombre de la columna en la tabla 'user_roles' que almacenará los roles
-    @Column(name = "role")
-    private List<String> roles = new ArrayList<>();
-
-    // Establece una relación Uno a Muchos con la entidad Task
-// mappedBy = El campo en la clase Task que mapea esta relación
-// cascade = Las operaciones (persist, remove, etc.) se propagarán a las tareas relacionadas
-// orphanRemoval = Si se elimina una tarea de esta lista, se eliminará de la base de datos
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
-    // Método auxiliar para agregar una tarea al usuario
-// Mantiene la consistencia en ambos lados de la relación bidireccional
+    // Métodos de ayuda para la relación bidireccional
     public void addTask(Task task) {
-        tasks.add(task);        // Agrega la tarea a la lista de tareas del usuario
-        task.setUser(this);     // Establece este usuario como propietario de la tarea
+        tasks.add(task);
+        task.setUser(this);
     }
 
-    // Método auxiliar para eliminar una tarea del usuario
-// Mantiene la consistencia en ambos lados de la relación bidireccional
     public void removeTask(Task task) {
-        tasks.remove(task);     // Elimina la tarea de la lista
-        task.setUser(null);     // Elimina la referencia al usuario en la tarea
+        tasks.remove(task);
+        task.setUser(null);
     }
 }

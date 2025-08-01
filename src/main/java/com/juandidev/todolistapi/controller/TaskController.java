@@ -3,6 +3,8 @@ package com.juandidev.todolistapi.controller;
 import com.juandidev.todolistapi.dto.request.TaskRequest;
 import com.juandidev.todolistapi.dto.response.TaskResponse;
 import com.juandidev.todolistapi.service.ITaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +21,6 @@ public class TaskController {
     public TaskController(ITaskService taskService) {
         this.taskService = taskService;
     }
-
     @GetMapping
     public ResponseEntity<List<TaskResponse>> getAllTasks() {
         return ResponseEntity.ok(taskService.findAllTasks());

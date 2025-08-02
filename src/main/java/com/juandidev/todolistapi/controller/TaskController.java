@@ -3,8 +3,6 @@ package com.juandidev.todolistapi.controller;
 import com.juandidev.todolistapi.dto.request.TaskRequest;
 import com.juandidev.todolistapi.dto.response.TaskResponse;
 import com.juandidev.todolistapi.service.ITaskService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +19,7 @@ public class TaskController {
     public TaskController(ITaskService taskService) {
         this.taskService = taskService;
     }
+
     @GetMapping
     public ResponseEntity<List<TaskResponse>> getAllTasks() {
         return ResponseEntity.ok(taskService.findAllTasks());
@@ -34,7 +33,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> createTask(
+            @Valid @RequestBody TaskRequest taskRequest) {
         TaskResponse createdTask = taskService.createTask(taskRequest);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
@@ -52,13 +52,9 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<TaskResponse>> getTasksByEstado(@PathVariable boolean estado) {
-        return ResponseEntity.ok(taskService.findTasksByEstado(estado));
-    }
-
-    @GetMapping("/responsable/{responsable}")
-    public ResponseEntity<List<TaskResponse>> getTasksByResponsable(@PathVariable String responsable) {
-        return ResponseEntity.ok(taskService.findTasksByResponsable(responsable));
+    @GetMapping("/status/{completed}")
+    public ResponseEntity<List<TaskResponse>> getTasksByStatus(
+            @PathVariable boolean completed) {
+        return ResponseEntity.ok(taskService.findTasksByEstado(completed));
     }
 }

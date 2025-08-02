@@ -13,5 +13,4 @@ public interface ITaskService {
     TaskResponse updateTask(Long id, TaskRequest taskRequest);
     void deleteTask(Long id);
     List<TaskResponse> findTasksByEstado(boolean estado);
-    List<TaskResponse> findTasksByResponsable(String responsable);
 }

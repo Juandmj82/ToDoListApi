@@ -1,1 +1,2 @@
 DELETE http://localhost:8080/api/tasks/1
+Authorization: Bearer TU_TOKEN_JWT_AQUI

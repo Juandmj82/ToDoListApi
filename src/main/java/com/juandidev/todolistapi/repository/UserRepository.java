@@ -8,11 +8,11 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsernameNear(String username);
+    Optional<User> findByUsername(String username);
 
-    //Hack: Para validar que no exista el usuario
+    // Para validar que no exista el usuario
     boolean existsByUsername(String username);
 
-    // Hack: para validar que no exita el email
+    // Para validar que no exista el email
     boolean existsByEmail(String email);
 }

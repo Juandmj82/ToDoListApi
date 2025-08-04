@@ -1,29 +1,28 @@
 package com.juandidev.todolistapi.mapper;
 
-import com.juandidev.todolistapi.dto.request.TaskRequest;
 import com.juandidev.todolistapi.dto.response.TaskResponse;
 import com.juandidev.todolistapi.model.Task;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Component
 public class TaskMapper {
 
-    public Task toEntity(TaskRequest request) {
-        Task task = new Task();
-        task.setTitle(request.title());
-        task.setDescription(request.description());
-        task.setDueDate(request.dueDate());
-        task.setCompleted(false);
-        return task;
-    }
+    public TaskResponse toTaskResponse(Task task) {
+        if (task == null) {
+            return null;
+        }
 
-    public TaskResponse toResponse(Task task) {
+        // Corregimos los argumentos para que coincidan con la nueva firma del constructor de TaskResponse
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getDueDate(),
-                task.isCompleted()
+                task.isCompleted(),
+                task.getCreatedAt()
         );
     }
 }

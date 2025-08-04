@@ -2,14 +2,14 @@ package com.juandidev.todolistapi.service;
 
 import com.juandidev.todolistapi.dto.request.TaskRequest;
 import com.juandidev.todolistapi.dto.response.TaskResponse;
-import com.juandidev.todolistapi.exception.TaskNotFoundException;
-import com.juandidev.todolistapi.mapper.TaskMapper;
 import com.juandidev.todolistapi.model.Task;
 import com.juandidev.todolistapi.model.User;
 import com.juandidev.todolistapi.repository.TaskRepository;
+import com.juandidev.todolistapi.repository.UserRepository;
+import com.juandidev.todolistapi.security.UserDetailsImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,75 +19,102 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements ITaskService {
 
     private final TaskRepository taskRepository;
-    private final TaskMapper taskMapper;
+    private final UserRepository userRepository;
 
-    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper taskMapper) {
+    @Autowired
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
-        this.taskMapper = taskMapper;
+        this.userRepository = userRepository;
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<TaskResponse> findAllTasks() {
         User currentUser = getCurrentUser();
-        return taskRepository.findByUser(currentUser).stream()
-                .map(taskMapper::toResponse)
+        return taskRepository.findByUserId(currentUser.getId())
+                .stream()
+                .map(this::toTaskResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<TaskResponse> findTaskById(Long id) {
         User currentUser = getCurrentUser();
         return taskRepository.findByIdAndUser(id, currentUser)
-                .map(taskMapper::toResponse);
+                .map(this::toTaskResponse);
     }
 
     @Override
-    @Transactional
     public TaskResponse createTask(TaskRequest taskRequest) {
-        Task task = taskMapper.toEntity(taskRequest);
-        task.setUser(getCurrentUser()); // Asignar el usuario actual
+        User currentUser = getCurrentUser();
+        Task task = new Task();
+        task.setTitle(taskRequest.title());
+        task.setDescription(taskRequest.description());
+        task.setDueDate(taskRequest.dueDate());
+        task.setCompleted(false);
+        task.setUser(currentUser);
+
         Task savedTask = taskRepository.save(task);
-        return taskMapper.toResponse(savedTask);
+
+        return toTaskResponse(savedTask);
     }
 
     @Override
-    @Transactional
     public TaskResponse updateTask(Long id, TaskRequest taskRequest) {
         User currentUser = getCurrentUser();
-        Task existingTask = taskRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new TaskNotFoundException("Tarea no encontrada con id: " + id));
 
-        existingTask.setTitle(taskRequest.title());
-        existingTask.setDescription(taskRequest.description());
-        existingTask.setDueDate(taskRequest.dueDate());
-        existingTask.setCompleted(taskRequest.completed());
-
-        Task updatedTask = taskRepository.save(existingTask);
-        return taskMapper.toResponse(updatedTask);
+        return taskRepository.findByIdAndUser(id, currentUser)
+                .map(task -> {
+                    task.setTitle(taskRequest.title());
+                    task.setDescription(taskRequest.description());
+                    task.setDueDate(taskRequest.dueDate());
+                    task.setCompleted(taskRequest.completed());
+                    Task updatedTask = taskRepository.save(task);
+                    return toTaskResponse(updatedTask);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada o no pertenece al usuario autenticado."));
     }
 
     @Override
-    @Transactional
     public void deleteTask(Long id) {
         User currentUser = getCurrentUser();
-        Task task = taskRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new TaskNotFoundException("Tarea no encontrada con id: " + id));
-        taskRepository.delete(task);
+        // 1. Busca la tarea por su ID y el usuario
+        //    Esto asegura que solo se pueda eliminar las tareas del usuario autenticado
+        Task taskToDelete = taskRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new IllegalArgumentException("Tarea no encontrada o no pertenece al usuario autenticado."));
+
+        // 2. Elimina la tarea de la base de datos
+        taskRepository.delete(taskToDelete);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<TaskResponse> findTasksByEstado(boolean estado) {
         User currentUser = getCurrentUser();
-        return taskRepository.findByCompletedAndUser(estado, currentUser).stream()
-                .map(taskMapper::toResponse)
+        return taskRepository.findByCompletedAndUser(estado, currentUser)
+                .stream()
+                .map(this::toTaskResponse)
                 .collect(Collectors.toList());
     }
 
-    // Método auxiliar para obtener el usuario autenticado
     private User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetailsImpl) {
+            String username = ((UserDetailsImpl) principal).getUsername();
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new IllegalStateException("Usuario autenticado no encontrado en la base de datos."));
+        } else {
+            throw new IllegalStateException("Usuario no autenticado o tipo de principal inesperado.");
+        }
+    }
+
+    private TaskResponse toTaskResponse(Task task) {
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.isCompleted(),
+                task.getCreatedAt()
+        );
     }
 }

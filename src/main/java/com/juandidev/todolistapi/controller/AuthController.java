@@ -1,5 +1,6 @@
 package com.juandidev.todolistapi.controller;
 
+import com.juandidev.todolistapi.dto.request.LoginRequest;
 import com.juandidev.todolistapi.dto.request.RegisterRequest;
 import com.juandidev.todolistapi.dto.response.AuthResponse;
 import com.juandidev.todolistapi.service.IAuthService;
@@ -23,6 +24,12 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         AuthResponse authResponse = authService.register(registerRequest);
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        AuthResponse authResponse = authService.login(loginRequest);
         return ResponseEntity.ok(authResponse);
     }
 }

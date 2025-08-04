@@ -1,0 +1,12 @@
+### Obtener perfil del usuario actual (requiere autenticación)
+GET http://localhost:8080/api/users/me
+Authorization: Bearer {{auth_token}}
+
+### Actualizar perfil del usuario actual (requiere autenticación)
+PUT http://localhost:8080/api/users/me
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "email": "nuevo_email@example.com"
+}

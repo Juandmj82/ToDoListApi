@@ -1,41 +1,43 @@
 ### Obtener todas las tareas del usuario autenticado
 GET http://localhost:8080/api/tasks
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjQzODgsImV4cCI6MTc1NDMyNzk4OH0.ntxewv93JGIk5AEkQ7GJ9E1ordXtIRtB_shI4-8jAf4
 
 ### Crear una nueva tarea
 POST http://localhost:8080/api/tasks
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I
 Content-Type: application/json
 
 {
-  "title": "Tarea de prueba",
-  "description": "Esta es una tarea de prueba",
-  "completed": false
+  "title": "Revisar proyecto final",
+  "description": "Proyecto final",
+  "dueDate": "2025-08-31T23:59:59"
 }
 
+
 ### Obtener una tarea por ID
-GET http://localhost:8080/api/tasks/1
-Authorization: Bearer {{auth_token}}
+GET http://localhost:8080/api/tasks/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I
 
 ### Actualizar una tarea
-PUT http://localhost:8080/api/tasks/1
-Authorization: Bearer {{auth_token}}
+PUT http://localhost:8080/api/tasks/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I
 Content-Type: application/json
 
 {
-  "title": "Tarea actualizada",
+  "title": "Tarea actualizada prueba final",
   "description": "Descripción actualizada",
   "completed": true
 }
 
 ### Eliminar una tarea
-DELETE http://localhost:8080/api/tasks/1
-Authorization: Bearer {{auth_token}}
+DELETE http://localhost:8080/api/tasks/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I
+
 
 ### Filtrar tareas por estado (completadas)
 GET http://localhost:8080/api/tasks?completed=true
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I
 
 ### Filtrar tareas por estado (pendientes)
 GET http://localhost:8080/api/tasks?completed=false
-Authorization: Bearer {{auth_token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I

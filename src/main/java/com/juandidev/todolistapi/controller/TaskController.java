@@ -6,6 +6,7 @@ import com.juandidev.todolistapi.service.ITaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +22,12 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> getAllTasks() {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<TaskResponse>> getAllTasks(
+            @RequestParam(required = false) Boolean completed) {
+        if (completed != null) {
+            return ResponseEntity.ok(taskService.findTasksByEstado(completed));
+        }
         return ResponseEntity.ok(taskService.findAllTasks());
     }
 
@@ -33,8 +39,8 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(
-            @Valid @RequestBody TaskRequest taskRequest) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest taskRequest) {
         TaskResponse createdTask = taskService.createTask(taskRequest);
         return new ResponseEntity<>(createdTask, HttpStatus.CREATED);
     }
@@ -52,9 +58,5 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/status/{completed}")
-    public ResponseEntity<List<TaskResponse>> getTasksByStatus(
-            @PathVariable boolean completed) {
-        return ResponseEntity.ok(taskService.findTasksByEstado(completed));
-    }
+    // El filtrado por estado ahora se maneja en el método getAllTasks con parámetros de consulta
 }

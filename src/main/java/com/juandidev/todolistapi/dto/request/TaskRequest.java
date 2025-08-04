@@ -3,7 +3,7 @@ package com.juandidev.todolistapi.dto.request;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record TaskRequest(
         @NotBlank(message = "Title cannot be empty")
@@ -14,7 +14,7 @@ public record TaskRequest(
         String description,
 
         @Future(message = "Due date must be in the future")
-        LocalDate dueDate,
+        LocalDateTime dueDate,
 
         boolean completed
 ) {}

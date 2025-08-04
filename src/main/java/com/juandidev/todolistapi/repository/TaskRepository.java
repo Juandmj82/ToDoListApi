@@ -18,4 +18,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // Obtener tareas por estado (completadas o no) de un usuario específico
     List<Task> findByCompletedAndUser(boolean completed, User user);
+
+    // Método para buscar todas las tareas por el ID del usuario
+    List<Task> findByUserId(Long userId);
 }

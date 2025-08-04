@@ -1,12 +1,3 @@
 ### Obtener perfil del usuario actual (requiere autenticación)
 GET http://localhost:8080/api/users/me
-Authorization: Bearer {{auth_token}}
-
-### Actualizar perfil del usuario actual (requiere autenticación)
-PUT http://localhost:8080/api/users/me
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "email": "nuevo_email@example.com"
-}
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzMjY2MTAsImV4cCI6MTc1NDMzMDIxMH0.D_GPixRxAigSUYRvIe0Zqs-X6kKkiUv5MCRwoyNLC-I

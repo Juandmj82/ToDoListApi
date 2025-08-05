@@ -2,6 +2,7 @@ package com.juandidev.todolistapi.service;
 
 import com.juandidev.todolistapi.dto.request.TaskRequest;
 import com.juandidev.todolistapi.dto.response.TaskResponse;
+import com.juandidev.todolistapi.dto.response.UserResponse;
 import com.juandidev.todolistapi.model.Task;
 import com.juandidev.todolistapi.model.User;
 import com.juandidev.todolistapi.repository.TaskRepository;
@@ -108,13 +109,20 @@ public class TaskServiceImpl implements ITaskService {
     }
 
     private TaskResponse toTaskResponse(Task task) {
+        UserResponse userResponse = null;
+        if (task.getUser() != null) {
+            User user = task.getUser();
+            userResponse = new UserResponse(user.getId(), user.getUsername(), user.getEmail(), user.getCreatedAt());
+        }
+
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getDueDate(),
                 task.isCompleted(),
-                task.getCreatedAt()
+                task.getCreatedAt(),
+                userResponse
         );
     }
 }

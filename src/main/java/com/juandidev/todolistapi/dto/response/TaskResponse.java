@@ -8,5 +8,6 @@ public record TaskResponse(
         String description,
         LocalDateTime dueDate,
         boolean completed,
-        LocalDateTime createdAt // Agrega este campo
+        LocalDateTime createdAt,
+        UserResponse user
 ) {}

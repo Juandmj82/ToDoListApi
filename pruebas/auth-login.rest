@@ -6,5 +6,3 @@ Content-Type: application/json
   "username": "juandidev",
   "password": "password123"
 }
-
-

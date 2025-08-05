@@ -1,0 +1,44 @@
+### Obtener todas las tareas del usuario autenticado
+GET http://localhost:8080/api/tasks
+    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQ0MDk2NDUsImV4cCI6MTc1NDQxMzI0NX0.XD6DVwh80RGbO5mIcqCAkQ3rFcENJT2P5X2bL0xgNOo
+
+
+### Crear una nueva tarea
+POST http://localhost:8080/api/tasks
+    Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzNTAxMzUsImV4cCI6MTc1NDM1MzczNX0.4NNX_CGBGJfwj7WIYIZQtJVIoTaQ2G_LQ-IbBr3bISU
+Content-Type: application/json
+
+{
+  "title": "Revisar proyecto final",
+  "description": "Proyecto final",
+  "dueDate": "2025-08-31T23:59:59"
+}
+
+
+### Obtener una tarea por ID
+GET http://localhost:8080/api/tasks/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQ0MDk0MTUsImV4cCI6MTc1NDQxMzAxNX0.Pm9KHhtSfnr7Pb55vlQ2b19RthXvttUWnsxdYMjFSnI
+
+### Actualizar una tarea
+PUT http://localhost:8080/api/tasks/3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzNTAxMzUsImV4cCI6MTc1NDM1MzczNX0.4NNX_CGBGJfwj7WIYIZQtJVIoTaQ2G_LQ-IbBr3bISU
+Content-Type: application/json
+
+{
+  "title": "Tarea actualizada prueba final",
+  "description": "Descripción actualizada",
+  "completed": true
+}
+
+### Eliminar una tarea
+DELETE http://localhost:8080/api/tasks/4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzNTAxMzUsImV4cCI6MTc1NDM1MzczNX0.4NNX_CGBGJfwj7WIYIZQtJVIoTaQ2G_LQ-IbBr3bISU
+
+
+### Filtrar tareas por estado (completadas)
+GET http://localhost:8080/api/tasks?completed=true
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzNTAxMzUsImV4cCI6MTc1NDM1MzczNX0.4NNX_CGBGJfwj7WIYIZQtJVIoTaQ2G_LQ-IbBr3bISU
+
+### Filtrar tareas por estado (pendientes)
+GET http://localhost:8080/api/tasks?completed=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqdWFuZGlkZXYiLCJpYXQiOjE3NTQzNTAxMzUsImV4cCI6MTc1NDM1MzczNX0.4NNX_CGBGJfwj7WIYIZQtJVIoTaQ2G_LQ-IbBr3bISU

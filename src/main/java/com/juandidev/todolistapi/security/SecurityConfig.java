@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -58,7 +59,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/users/check-username", "/api/users/check-email", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        // Allow preflight requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Public endpoints
+                        .requestMatchers(
+                            "/api/auth/**", 
+                            "/api/users/check-username", 
+                            "/api/users/check-email", 
+                            "/v3/api-docs/**", 
+                            "/swagger-ui/**",
+                            "/swagger-ui.html"
+                        ).permitAll()
+                        // All other requests need to be authenticated
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -73,20 +85,38 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permitir todos los orígenes en desarrollo (cambiar a específicos en producción)
+        // Allow all origins in development (restrict in production)
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://127.0.0.1:*", 
             "http://localhost:*",
-            "file://*",
-            "*" // Permitir todos los orígenes en desarrollo
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "file://*"
         ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L); // 1 hora de caché para las opciones preflight
         
-        // Asegurarse de exponer el encabezado de autorización
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        // Allow all necessary methods
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        
+        // Allow all headers that might be sent by the frontend
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization", 
+            "Content-Type", 
+            "Accept", 
+            "X-Requested-With",
+            "Cache-Control"
+        ));
+        
+        // Allow credentials (cookies, HTTP authentication)
+        configuration.setAllowCredentials(true);
+        
+        // Cache preflight requests for 1 hour
+        configuration.setMaxAge(3600L);
+        
+        // Expose necessary headers to the frontend
+        configuration.setExposedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Disposition"
+        ));
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

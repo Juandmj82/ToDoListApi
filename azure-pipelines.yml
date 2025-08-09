@@ -3,7 +3,7 @@ trigger:
 - main
 
 variables:
-  azureSubscription: 'Azure subscription 1(3da0b6e3-9f32-4e61-ad89-3ed5e6c12b31)'
+  azureSubscription: 'Azure subscription 2'
   webAppName: 'todolist-juan-api'
   vmImageName: 'ubuntu-latest'
 

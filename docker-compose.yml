@@ -1,23 +1,52 @@
-
 services:
+  # Base de datos PostgreSQL
   postgres:
-    image: postgres:latest
+    image: postgres:15
     container_name: todolist-postgres
     env_file: .env
     environment:
+      POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db-init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    networks:
+      - todolist-network
+
+  # Backend Spring Boot
+  backend:
+    build: .
+    container_name: todolist-backend
+    env_file: .env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      PORT: ${PORT}
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - postgres
+    networks:
+      - todolist-network
+
+  # Frontend (Nginx)
+  frontend:
+    build: ../todolist-frontend-legacy
+    container_name: todolist-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - todolist-network
 
 volumes:
   postgres_data:
+
+networks:
+  todolist-network:
+    driver: bridge

@@ -34,6 +34,8 @@ Este proyecto demuestra:
 git clone https://github.com/Juandmj82/ToDoListApi.git
 
 # Construir y ejecutar con Docker Compose
+# Copiar la configuración de ejemplo y ajustar los valores
+cp .env.example .env
 docker-compose up --build
 
 # La aplicación estará disponible en:

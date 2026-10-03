@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Lista de Tareas - Conectado a Render - Vercel Deploy Test</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilo personalizado para el botón de cerrar sesión */
+        #logoutBtn:hover {
+            background-color: white !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+        
+        /* Estilo para el nombre de usuario */
+        #userEmail {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #0056b3 0%, #0099e6 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-list-check me-2"></i>Mi Lista de Tareas
+            </a>
+            <div class="d-flex align-items-center">
+                <span class="navbar-text me-3 text-light" id="userEmail"></span>
+                <button class="btn btn-warning text-dark fw-bold btn-custom" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Formulario para agregar tarea -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Nueva Tarea</h5>
+                        <form id="taskForm">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="taskTitle" placeholder="Título" required>
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" id="taskDescription" rows="2" placeholder="Descripción"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="taskDueDate" class="form-label">Fecha de Vencimiento</label>
+                                <div class="input-group">
+                                    <input type="datetime-local" class="form-control" id="taskDueDate">
+                                    <button type="button" class="btn btn-outline-secondary" id="clearTaskDueDateBtn" title="Limpiar fecha">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">La fecha debe ser en el futuro</div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-8">
+                <!-- Filtros -->
+                <div class="mb-3">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-warning filter-btn active text-dark fw-bold" data-filter="all" style="background-color: white; border-color: #ffc107;">Todas</button>
+                        <button type="button" class="btn btn-warning filter-btn text-dark" data-filter="true">Completadas</button>
+                        <button type="button" class="btn btn-warning filter-btn text-dark" data-filter="false">Pendientes</button>
+                    </div>
+                    <!-- Botón para eliminar tareas seleccionadas -->
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-danger btn-sm d-none" id="deleteSelectedBtn">
+                            <i class="fas fa-trash me-1"></i>Eliminar seleccionadas (<span id="selectedCount">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de tareas -->
+                <div id="tasksList" class="list-group">
+                    <!-- Las tareas se cargarán aquí dinámicamente -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando tareas...</p>
+                    </div>
+                </div>
+                
+                <!-- Paginación centrada -->
+                <div id="paginationContainer" class="d-flex justify-content-center mt-4">
+                    <nav id="paginationNav" aria-label="Navegación de páginas">
+                        <ul class="pagination pagination-sm mb-0" id="paginationList">
+                            <!-- Los botones de paginación se generarán dinámicamente -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar tarea -->
+    <div class="modal fade" id="editTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTaskForm">
+                        <input type="hidden" id="editTaskId">
+                        <div class="mb-3">
+                            <label class="form-label">Título</label>
+                            <input type="text" class="form-control" id="editTaskTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="editTaskDescription" rows="3"></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="editTaskCompleted">
+                            <label class="form-check-label" for="editTaskCompleted">
+                                Completada
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editTaskDueDate" class="form-label">Fecha de Vencimiento</label>
+                            <div class="input-group">
+                                <input type="datetime-local" class="form-control" id="editTaskDueDate">
+                                <button type="button" class="btn btn-outline-secondary" id="clearEditTaskDueDateBtn" title="Limpiar fecha">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="saveTaskChanges" form="editTaskForm">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-light mb-0">
+                        Desarrollado por Juan Diego Merchán - Agosto 2025
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Nuestros scripts como módulos -->
+    <script type="module">
+        // Importar las funciones necesarias
+        import { initApp } from './js/app.js';
+        
+        // Inicializar la aplicación cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verificar si el usuario está autenticado
+            import('./js/api.js').then(({ isAuthenticated }) => {
+                if (isAuthenticated()) {
+                    // Usuario autenticado - mostrar aplicación de tareas
+                    initApp();
+                    setMinDateForDateInputs();
+                } else {
+                    // Usuario no autenticado - redirigir a página de bienvenida
+                    window.location.href = 'bienvenida.html';
+                }
+            });
+        });
+        
+        // Función para establecer fecha mínima en campos de datetime-local
+        function setMinDateForDateInputs() {
+            const now = new Date();
+            // Agregar 1 minuto para asegurar que sea futuro
+            now.setMinutes(now.getMinutes() + 1);
+            const minDateTime = now.toISOString().slice(0, 16);
+            
+            // Aplicar a todos los campos de datetime-local
+            const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+            dateInputs.forEach(input => {
+                input.min = minDateTime;
+            });
+        }
+    </script>
+    <!-- Cargar los módulos -->
+    <script src="js/api.js" type="module"></script>
+    <script src="js/auth.js" type="module"></script>
+</body>
+</html>

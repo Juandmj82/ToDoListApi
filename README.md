@@ -31,8 +31,7 @@ Este proyecto demuestra:
 ### Ejecutar la aplicación
 ```bash
 # Clonar el repositorio
-git clone <repository-url>
-cd ToDoListApi
+git clone https://github.com/Juandmj82/ToDoListApi.git
 
 # Construir y ejecutar con Docker Compose
 docker-compose up --build
@@ -218,7 +217,7 @@ docker-compose down -v
 
 Este proyecto demuestra:
 - **Containerización** con Docker
-- **Microservicios** con Spring Boot
+- **Arquitectura en contenedores** con Spring Boot
 - **Gestión de proyectos** con Azure DevOps
 - **Desarrollo full-stack** moderno
 - **DevOps** básico con Docker Compose
